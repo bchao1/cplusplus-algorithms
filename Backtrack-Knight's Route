@@ -1,0 +1,82 @@
+#include <iostream>
+#include <iomanip>
+#define L 100
+
+using namespace std;
+
+int board[L][L] = {};
+int x_moves[8] = {2,1,-1,-2,-2,-1,1,2};
+int y_moves[8] = {1,2,2,1,-1,-2,-2,-1};
+
+bool valid_step(int [L][L], int , int );
+void print_sol(int [L][L], int);
+bool solved(int [L][L], int, int,int,int);
+void Knights_Route(int [L][L],int, int ,int);
+
+int main()
+{
+    int length;
+    while(cin>>length)
+    {
+        Knights_Route(board,0,0,length);
+    }
+    return 0;
+}
+
+
+bool valid_step(int board[L][L], int length, int x, int y)
+{
+    return (x >= 0 && x < length &&
+            y >= 0 && y < length &&
+            board[x][y] == 0);
+}
+
+void print_sol(int board[L][L], int length)
+{
+    for(int i = 0 ; i < length ; ++i)
+        {
+            for(int j = 0 ; j < length ; ++j)
+                cout << setw(3)<< board[i][j] << ' ';
+            cout<<endl;
+        }
+    return;
+}
+
+void Knights_Route (int board[L][L], int x, int y, int length)
+{
+    for(int i = 0 ; i < length ; ++i)
+        for(int j = 0 ; j < length ; ++j)
+            board[i][j] = 0;
+
+    board[0][0] = 1; //Initial position
+
+    if(solved(board,x,y,length,2))
+        print_sol(board,length);
+    else
+        cout<<"No Solution\n";
+    return;
+}
+
+bool solved(int board[L][L], int x, int y, int length, int _move)
+{
+    int next_x, next_y;
+
+    if(_move == length * length + 1)
+        return true;
+
+    for(int i = 0 ; i < 8 ; ++i)
+        {
+            next_x = x + x_moves[i];
+            next_y = y+ y_moves[i];
+            if(valid_step(board,length,next_x,next_y))
+            {
+                board[next_x][next_y] = _move;
+
+                if(solved(board,next_x,next_y,length,_move+1))
+                    return true;
+
+                board[next_x][next_y] = 0;
+            }
+        }
+    return false;
+}
