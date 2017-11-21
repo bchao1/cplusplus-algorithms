@@ -1,0 +1,91 @@
+#include <iostream>
+#include <iomanip>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <sstream>
+#include <stack>
+#include <cmath>
+#include <cstring>
+#define maxn 1000
+#define rep(i,a,b) for(int i=a;i<b;++i)
+typedef long long ll;
+using namespace std;
+
+
+class matrix {
+public:
+	int p[2][2] = { 0 };
+	int mod;
+public:
+	matrix(int = 0, int = 0, int = 0, int = 0);
+	const matrix& operator=(const matrix&);
+	//matrix operator+ (const matrix&);
+	matrix operator* (const matrix&);
+	//matrix operator% (const int);
+	//void show() const;
+};
+
+matrix::matrix(int a, int b, int c, int d) {
+	p[0][0] = a; p[0][1] = b; p[1][0] = c; p[1][1] = d;
+}
+
+const matrix& matrix::operator=(const matrix& right) {
+	for (int i = 0; i < 2; ++i)
+		for (int j = 0; j < 2; ++j)
+			p[i][j] = right.p[i][j];
+	return *this;
+}
+
+
+matrix matrix::operator+(const matrix& right) {
+	matrix temp;
+	for (int i = 0; i < 2; ++i)
+		for (int j = 0; j < 2; ++j)
+			temp.p[i][j] = p[i][j]+ right.p[i][j];
+	return temp;
+}
+
+matrix matrix::operator*(const matrix& right) {
+	matrix temp;
+	for (int i = 0; i < 2; ++i)
+		for (int j = 0; j < 2; ++j)
+			temp.p[i][j] = p[i][0] * right.p[j][0] + p[i][1] * right.p[j][1];
+	return temp;
+}
+
+matrix matrix::operator%(const int m) {
+	matrix temp;
+	for (int i = 0; i < 2; ++i)
+		for (int j = 0; j < 2; ++j)
+			temp.p[i][j] = p[i][j] % m;
+	return temp;
+}
+
+void matrix::show() const {
+	for (int i = 0; i < 2; ++i) {
+		for (int j = 0; j < 2; ++j)
+			cout << p[i][j] << ' ';
+		cout << '\n';
+	}
+	return;
+}
+
+matrix fast_power(matrix, int, int);
+
+int main() {
+
+		return 0;
+}
+
+matrix fast_power(matrix mat, int n, int m) {
+	matrix sol(1, 0, 0, 1,m);
+	matrix base = mat;
+	while (n) {
+		if (n & 1)
+			sol = sol*base;
+		base = base * base;
+		n >>= 1;
+	}
+	return sol;
+}
