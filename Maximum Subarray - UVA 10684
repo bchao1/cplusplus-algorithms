@@ -1,0 +1,42 @@
+#include <iostream>
+#include <cmath>
+#include <vector>
+#include <string>
+#include <sstream>
+#include <algorithm>
+#include <cstring>
+#include <iomanip>
+#include <map>
+#include <stack>
+#include <vector>
+#include <set>
+#include <queue>
+using namespace std;
+typedef multiset<int>::iterator it;
+
+int main() {
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	int n;
+	while (cin >> n) {
+		if (n == 0)
+			break;
+		int* num = new int[n];
+		for (int i = 0; i < n; ++i)
+			cin >> num[i];
+		int max_sum = 0;
+		int sum = 0;
+		for (int i = 0; i < n; ++i) {
+			sum += num[i];
+			if (sum < 0)
+				sum = 0;
+			max_sum = max(max_sum, sum);
+		}
+		if (max_sum)
+			cout << "The maximum winning streak is " << max_sum << ".\n";
+		else
+			cout << "Losing streak.\n";
+		delete[] num;
+	}
+	return 0;
+}
