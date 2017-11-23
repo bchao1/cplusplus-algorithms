@@ -1,0 +1,61 @@
+#include <iostream>
+#include <map>
+#include <string>
+#include <algorithm>
+#include <cstring>
+#define maxn 1001
+
+using namespace std;
+
+int length[maxn][maxn];
+int pre[maxn][maxn];
+
+void LCS(int , int, string);
+
+int main() {
+	string s1, s2;
+	while (!(cin >> s1 >> s2).eof()) {
+		int m = s1.size(), n = s2.size();
+
+		s1.insert(0, " ");
+		s2.insert(0, " ");
+
+		for (int i = 0; i <= m; ++i) length[i][0] = 0;
+		for (int i = 0; i <= n; ++i) length[0][i] = 0;
+
+		for (int i = 1; i <= m; ++i)
+			for (int j = 1; j <= n; ++j) {
+				if (s1[i] == s2[j]) {
+					length[i][j] = length[i - 1][j - 1] + 1;
+					pre[i][j] = 0;
+				}
+				else
+				{
+					if (length[i - 1][j] < length[i][j - 1]) {
+						length[i][j] = length[i][j - 1];
+						pre[i][j] = 1;
+					}
+					else {
+						length[i][j] = length[i - 1][j];
+						pre[i][j] = 2;
+					}
+				}
+			}
+		LCS(m, n ,s1);
+		putchar('\n');
+	}
+	return 0;
+}
+
+void LCS(int i, int j, string s1) {
+	if (i == 0 || j == 0)
+		return;
+	if (pre[i][j] == 0) {
+		LCS(i - 1, j - 1,s1);
+		putchar(s1[i]);
+	}
+	else if (pre[i][j] == 1)
+		LCS(i, j - 1,s1);
+	else if (pre[i][j] == 2)
+		LCS(i - 1, j,s1);
+}
