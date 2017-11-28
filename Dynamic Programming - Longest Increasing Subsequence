@@ -1,0 +1,31 @@
+#include <iostream>
+#include <vector>
+#include <cstring>
+#include <cmath>
+#include <iomanip>
+#include <algorithm>
+#include <cstdio>
+#define maxn 30001
+
+typedef unsigned long long ll;
+using namespace std;
+
+int main() {
+	int n;
+	vector<int>num;;
+	while (!(cin >> n).eof())
+		num.push_back(n);
+	vector<int>lis(num.size(),1);
+	for (int i = 1; i < num.size(); ++i)
+		for (int j = 0; j < i; ++j)
+			if (num[i] > num[j] && lis[i] < lis[j] + 1)
+				lis[i] = lis[j] + 1;
+	int maxlen = 0;
+	for (int i = 0; i < lis.size(); ++i) {
+		maxlen = max(maxlen, lis[i]);
+		cout << lis[i] << ' ';
+	}
+	cout << endl;
+	
+	return 0;
+}
