@@ -1,0 +1,69 @@
+#include <iostream>
+#include <vector>
+#include <cstring>
+#include <cmath>
+#include <iomanip>
+#include <algorithm>
+#include <cstdio>
+#include <set>
+#include <cassert>
+
+using namespace std;
+set<int>primes;
+bool is_prime(int);
+vector<int>ring;
+int used[17];
+void find_ring(int,int);
+
+int main() {
+	primes.insert(2);
+	for (int i = 3; i <= 31; i += 2)
+		if (is_prime(i))
+			primes.insert(i);
+
+	int n;
+	int i = 1;
+	while (cin >> n) {
+		memset(used, 0, sizeof(used));
+		ring.clear();
+		ring.push_back(1);
+		if (i > 1)
+			cout << '\n';
+		cout << "Case " << i++ << ":\n";
+		find_ring(n, 1);
+	}
+	return 0;
+}
+
+bool is_prime(int n) {
+	for (set<int>::iterator it=primes.begin(); *it <= sqrt(n); ++it)
+		if (n%(*it) == 0)
+			return false;
+	return true;
+}
+
+void find_ring(int n, int i) {
+	if (i == n ) {
+		if (primes.count(*(--ring.end()) + 1) == 1) {
+			for (int i = 0; i < ring.size(); ++i) {
+				if (i > 0)
+					cout << ' ';//OUTPUT FORMAT...
+				cout << ring[i];
+			}
+			cout << '\n';
+			return;
+		}
+	}
+	for (int j = 2; j <= n; ++j) {
+		if (!used[j]) {
+			if (primes.count(j + *(--ring.end())) == 1) {
+				used[j] = 1;
+				ring.push_back(j);
+				find_ring(n, i + 1);
+				used[j] = 0;
+				ring.pop_back();
+			}
+		}
+	}
+	return;
+}
