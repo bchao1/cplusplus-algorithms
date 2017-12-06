@@ -1,0 +1,66 @@
+#include <iostream>
+#include <string>
+#include <cstring>
+#include <cctype>
+#include <vector>
+#include <set>
+#include <algorithm>
+
+using namespace std;
+
+//Max string length doesn't exceed 100
+int len[101][101];
+int check[101][101];
+set<string>lcs;
+string s1, s2;
+void find_lcs(int, int, string s);
+string rev(string);
+
+int main() {
+	while (cin >> s1 >> s2) {
+		memset(len, 0, sizeof(len));
+		memset(check, 0, sizeof(check));
+		lcs.clear();
+
+		s1.insert(s1.begin(),' '); s2.insert(s2.begin(),' ');
+		for (int i = 1; i < s1.size(); ++i)
+			for (int j = 1; j < s2.size(); ++j) {
+				if (s1[i] == s2[j])
+					len[i][j] = 1 + len[i - 1][j - 1];
+				else
+					len[i][j] = max(len[i][j - 1], len[i - 1][j]);
+			}
+		find_lcs(s1.size()-1,s2.size()-1, "");
+		for (set<string>::iterator it = lcs.begin(); it != lcs.end(); ++it)
+			cout << rev(*it) << '\n';
+	}	
+	return 0;
+}
+
+//Use backtracking method to generate all LCS
+void find_lcs(int x, int y, string s) {
+	if (x == 0 || y == 0) {
+		lcs.insert(s);
+		return;
+	}
+	if (s1[x] == s2[y])
+		find_lcs(x - 1, y - 1, s + s1[x]);
+	else {
+		if (len[x - 1][y] < len[x][y - 1])
+			find_lcs(x, y - 1, s);
+		else if (len[x - 1][y] > len[x][y - 1])
+			find_lcs(x - 1, y, s);
+		else {
+			find_lcs(x, y - 1, s);
+			find_lcs(x - 1, y, s);
+		}
+	}
+	return;
+}
+
+string rev(string s) {
+	string revs = "";
+	for (int i = s.size() - 1; i >= 0; --i)
+		revs += s[i];
+	return revs;
+}
