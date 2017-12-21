@@ -1,0 +1,44 @@
+#include <iostream>
+#include <bitset>
+#include <vector>
+using namespace std;
+typedef long long ll;
+
+bitset<1000000000000000>sieve_set;
+vector<ll>primes;
+ll sieve_size;
+
+void sieve(ll);
+bool is_prime(ll);
+
+int main() {
+	ll n;
+	while (cin >> n) {
+		sieve(n);
+		cout << "Primes in range 0 ~ " << n << "\n";
+		for (int i = 0; i < primes.size(); ++i)
+			cout << primes[i] << ' ';
+		cout << '\n';
+	}
+	return 0;
+}
+
+void sieve(ll upper_bound) {
+	sieve_size = upper_bound + 1;
+	sieve_set.reset(); sieve_set.flip();
+	sieve_set.set(0, false); sieve_set.set(size_t(1), false);
+	for (ll i = 2; i <= sieve_size; ++i)
+		if (sieve_set.test(i)) {
+			for (ll j = i*i; j <= sieve_size; j += i)
+				sieve_set.set(size_t(j), false);
+			primes.push_back(i);
+		}
+	return;
+}
+
+bool is_prime(ll n) {
+	for (int i = 0; primes[i] <= sqrt(n); ++i)
+		if (n%primes[i] == 0)
+			return false;
+	return true;
+}
