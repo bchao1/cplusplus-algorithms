@@ -1,0 +1,66 @@
+#include <iostream>
+#include <bitset>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <set>
+#include <map>
+
+using namespace std;
+
+typedef long long ll;
+typedef vector<int>vi;
+
+bitset<10000010>sieve_set;
+vector<ll>primes;
+ll sieve_size;
+
+void sieve(ll);
+bool is_prime(ll);
+vi primeFactors(ll);
+
+int main() {
+	sieve(100000);
+	ll n;
+	while (cin >> n) {
+		vi factors = primeFactors(n);
+		for (int i = 0; i < factors.size(); ++i)
+			cout << factors[i] << ' ';
+		cout << '\n';
+	}
+	return 0;
+}
+
+void sieve(ll upper_bound) {
+	sieve_size = upper_bound + 1;
+	sieve_set.reset(); sieve_set.flip();
+	sieve_set.set(0, false); sieve_set.set(size_t(1), false);
+	for (ll i = 2; i <= sieve_size; ++i)
+		if (sieve_set.test(i)) {
+			for (ll j = i*i; j <= sieve_size; j += i)
+				sieve_set.set(size_t(j), false);
+			primes.push_back(i);
+		}
+	return;
+}
+bool is_prime(ll n) {
+	for (int i = 0; primes[i] <= sqrt(n); ++i)
+		if (n%primes[i] == 0)
+			return false;
+	return true;
+}
+vi primeFactors(ll n) {
+	vi factors;
+	int i = 0;
+	ll prime_factor = primes[i];
+	while (n != 1 && prime_factor <= sqrt(n)) {
+		while (n%prime_factor == 0) {
+			n /= prime_factor;
+			factors.push_back(prime_factor); 
+		}
+		prime_factor = primes[++i];
+	}
+	if (n != 1) factors.push_back(n);
+	return factors;
+}
