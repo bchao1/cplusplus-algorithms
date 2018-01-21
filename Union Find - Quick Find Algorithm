@@ -1,0 +1,49 @@
+#include <iostream>
+
+using namespace std;
+
+class UF {
+public:
+	UF(int);
+	~UF();
+	void create_union(int, int);
+	bool is_connected(int, int);
+private:
+	int* _id;
+	int num;
+};
+
+UF::UF(int n) {
+	_id = new int[n];
+	for (int i = 0; i < n; ++i)
+		_id[i] = i;
+	num = n;
+}
+
+UF::~UF() {
+	delete[]_id;
+}
+
+bool UF::is_connected(int p, int q) {
+	return _id[p] == _id[q];
+}
+
+void UF::create_union(int p, int q) {
+	int pID = _id[p];
+	int qID = _id[q];
+	for (int i = 0; i < num; ++i)
+		if (_id[i] == pID)
+			_id[i] = qID;
+
+}
+
+int main()
+{
+	UF uf(10);
+	uf.create_union(1, 4);
+	uf.create_union(4, 5);
+	uf.create_union(5, 8);
+	
+    return 0;
+}
+
