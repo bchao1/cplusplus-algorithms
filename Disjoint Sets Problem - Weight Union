@@ -1,0 +1,78 @@
+#include "stdafx.h"
+#include <iostream>
+
+using namespace std;
+
+class UF {
+public:
+	UF(int);
+	~UF();
+	void create_union(int, int);
+	bool is_connected(int, int);
+private:
+	int find(int);
+	int* size;
+	int* root;
+	int num;
+};
+
+UF::UF(int n) {
+	root = new int[n];
+	size = new int[n];
+	for (int i = 0; i < n; ++i) {
+		root[i] = i;
+		size[i] = 1;
+	}
+	num = n;
+}
+UF::~UF() {
+	delete[]root;
+	delete[]size;
+}
+
+int UF::find(int p) {
+	int final_root = p;
+//Finding the root of a node.
+	while (final_root != root[final_root])
+		final_root = root[final_root];
+//Path compression.
+	while (p != final_root) {
+		int new_p = root[p];
+		root[p] = final_root;
+		p = new_p;
+	}
+	return final_root;
+}
+bool UF::is_connected(int p, int q) {
+	return find(p) == find(q);
+}
+void UF::create_union(int p, int q) {
+	int p_root = find(p);
+	int q_root = find(q);
+	if (p_root == q_root) return;
+	if (size[p_root] < size[q_root]) {
+		root[p_root] = q_root;
+		size[q_root] += size[p_root];
+	}
+	else {
+		root[q_root] = p_root;
+		size[p_root] = q_root;
+	}
+}
+
+int main()
+{
+	int n, p, q;
+	cout << "Enter number of elements in a disjoint set: "; cin >> n;
+	UF uf(n);
+	cout << "Enter make union operations: "; cin >> n;
+	while (n) {
+		cin >> p >> q;
+		uf.create_union(p, q); n--;
+	}
+	cout << "Enter two nodes to check connectivity: "; cin >> p >> q;
+	if (uf.is_connected(p, q)) cout << p << " & " << q << " are connected.";
+	else cout << p << " & " << q << " are not connected.";
+    return 0;
+}
+
