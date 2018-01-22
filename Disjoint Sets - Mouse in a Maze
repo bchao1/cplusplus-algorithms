@@ -1,0 +1,100 @@
+#include "stdafx.h"
+#include <iostream>
+
+using namespace std;
+int len;
+int** maze;
+
+class UF {
+public:
+	UF(int);
+	~UF();
+	void create_union(int, int);
+	bool is_connected(int, int);
+private:
+	int find(int);
+	int* size;
+	int* root;
+	int num;
+};
+
+UF::UF(int n) {
+	root = new int[n];
+	size = new int[n];
+	for (int i = 0; i < n; ++i) {
+		root[i] = i;
+		size[i] = 1;
+	}
+	num = n;
+}
+
+UF::~UF() {
+	delete[]root;
+	delete[]size;
+}
+
+int UF::find(int p) {
+	int final_root = p;
+//Finding the root of a node.
+	while (final_root != root[final_root])
+		final_root = root[final_root];
+//Path compression.
+	while (p != final_root) {
+		int new_p = root[p];
+		root[p] = final_root;
+		p = new_p;
+	}
+	return final_root;
+}
+
+bool UF::is_connected(int p, int q) {
+	return find(p) == find(q);
+}
+
+void UF::create_union(int p, int q) {
+	int p_root = find(p);
+	int q_root = find(q);
+	if (p_root == q_root) return;
+	if (size[p_root] < size[q_root]) {
+		root[p_root] = q_root;
+		size[q_root] += size[p_root];
+	}
+	else {
+		root[q_root] = p_root;
+		size[p_root] = q_root;
+	}
+}
+
+void create_maze() {
+	cout << "Enter size of maze: "; cin >> len;
+	maze = new int*[len + 1];
+	for (int i = 0; i < len + 1; ++i)
+		maze[i] = new int[len + 1];
+	cout << "Enter maze:\n";
+	for (int i = 0; i < len; ++i)
+		for (int j = 0; j < len; ++j)
+			cin >> maze[i][j];
+}
+
+bool route_exist() {
+//Checks if there is a route from [0,0] to [len-1,len-1]
+	UF uf(len*len);
+	for (int i = 0; i < len; ++i)
+		for (int j = 0; j < len; ++j) {
+			if (maze[i][j] == 1) {
+				if (maze[i][j+1] == 1)uf.create_union(len*i + j, len*i + j + 1);
+				if (maze[i+1][j] == 1)uf.create_union(len*i + j, len*(i + 1) + j);
+			}
+		}
+	return uf.is_connected(0, len*len - 1);
+}
+
+int main()
+{
+	create_maze();
+	if (route_exist()) cout << "Mouse escapes!\n";
+	else cout << "Mouse cannot escape!\n";
+
+    return 0;
+}
+
