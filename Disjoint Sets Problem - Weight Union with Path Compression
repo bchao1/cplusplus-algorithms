@@ -56,7 +56,7 @@ void UF::create_union(int p, int q) {
 	}
 	else {
 		root[q_root] = p_root;
-		size[p_root] = q_root;
+		size[p_root] += size[q_root];
 	}
 }
 
