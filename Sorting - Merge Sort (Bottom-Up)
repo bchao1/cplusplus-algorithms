@@ -38,10 +38,12 @@ void MergeSort::merge(const int& low, const int& mid, const int& hi) {
 		num[i] = sorted[i - low];
 }
 
+//Bottom-up method reduces recursive function overhead
 void MergeSort::merge_sort() {
 	for (int sz = 1; sz < len; sz *= 2)
 		for (int low = 0; low < len - sz; low += 2 * sz)
 			merge(low, low + sz - 1, min(low + 2 * sz - 1, len - 1));
+			//Every sorted portion is of size "sz" (only the last portion may be smaller)
 }
 void MergeSort::show() {
 	cout << "Sorted:\n";
