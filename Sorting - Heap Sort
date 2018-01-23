@@ -1,0 +1,106 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <cmath>
+#include <queue>
+#include <functional>
+#include <time.h>
+#include <cstdlib>
+using namespace std;
+
+class HeapSort {
+public:
+	HeapSort();
+	HeapSort(int);
+	~HeapSort();
+	void numbers_to_sort();
+	void heap_sort();
+	void show_num();
+	void fill();
+private:
+	int len;
+	int* num;
+	void make_heap();
+	void promote(int i);
+	void sink(int, int);
+	void sort(int);
+};
+
+HeapSort::HeapSort() {
+	len = 0;
+	num = NULL;
+}
+HeapSort::HeapSort(int l) {
+	delete num;
+	len = l;
+	num = new int[len + 1];
+}
+
+void HeapSort::numbers_to_sort() {
+	delete num;
+	cout << "Enter total number of numbers to sort:\n"; cin >> len;
+	num = new int[len + 1];
+	for (int i = 1; i <= len; ++i)
+		cin >> num[i];
+}
+
+HeapSort::~HeapSort() {
+	delete num;
+}
+
+void HeapSort::promote(int i) {
+	while (i > 1 && num[i] > num[i / 2]) {
+		swap(num[i], num[i / 2]);
+		i /= 2;
+	}
+}
+void HeapSort::sink(int unsorted_len, int i) {
+	while (2 * i <= unsorted_len) {
+		int j = 2 * i;
+		if (j + 1 <= unsorted_len&&num[j + 1] > num[j])j++;
+		if (num[j] < num[i])break;
+		swap(num[j], num[i]);
+		i = j;
+	}
+}
+void HeapSort::make_heap() {
+	for (int i = len; i >= 1; --i)
+		promote(i);
+}
+void HeapSort::sort(int unsorted_len) {
+	make_heap();
+	while (unsorted_len) {
+		swap(num[1], num[unsorted_len]);
+		sink(--unsorted_len, 1);
+	}
+}
+void HeapSort::heap_sort() {
+	sort(len);
+}
+void HeapSort::show_num() {
+	//cout << "Sorted numbers:\n";
+	for (int i = 1; i <= len; ++i)
+		cout << num[i] << ' ';
+	cout << '\n';
+}
+void HeapSort::fill() {
+	srand(time(NULL));
+	for (int i = 1; i <= len; ++i)
+		num[i] = rand() % 100 + 1;
+}
+int main() {
+	HeapSort hs(10);
+
+	for (int i = 1; i <= 100; ++i) {
+		hs.fill();
+		cout << "Test case " << i << ":\n";
+		cout << "Unsorted:\n"; hs.show_num();
+		hs.heap_sort();
+		cout << "Sorted:\n"; hs.show_num();
+		cout << '\n';
+	}
+	return 0;
+}
+
+
