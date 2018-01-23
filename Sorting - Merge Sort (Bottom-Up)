@@ -1,0 +1,61 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class MergeSort {
+public:
+	MergeSort();
+	~MergeSort();
+	void merge_sort();
+	void show();
+private:
+	int* num;
+	int len;
+	void merge(const int&, const int&, const int&);
+};
+
+MergeSort::MergeSort() {
+	cout << "Enter number of objects to sort:\n"; cin >> len;
+	num = new int[len];
+	cout << "Enter objects:\n";
+	for (int i = 0; i < len; ++i)
+		cin >> num[i];
+}
+MergeSort::~MergeSort() {
+	delete num;
+}
+void MergeSort::merge(const int& low, const int& mid, const int& hi) {
+	int* sorted = new int[len];
+	int i = low, j = mid + 1, k = 0;
+	for (k = 0; k < len; ++k) {
+		if (i == mid + 1) sorted[k] = num[j++];
+		else if (j == hi + 1) sorted[k] = num[i++];
+		else if (num[i] < num[j]) sorted[k] = num[i++];
+		else sorted[k] = num[j++];
+	}
+	for (int i = low; i <= hi; ++i)
+		num[i] = sorted[i - low];
+}
+
+void MergeSort::merge_sort() {
+	for (int sz = 1; sz < len; sz *= 2)
+		for (int low = 0; low < len - sz; low += 2 * sz)
+			merge(low, low + sz - 1, min(low + 2 * sz - 1, len - 1));
+}
+void MergeSort::show() {
+	cout << "Sorted:\n";
+	for (int i = 0; i < len; ++i)
+		cout << num[i] << ' ';
+	cout << '\n';
+}
+
+int main()
+{
+	MergeSort arr;
+	arr.merge_sort();
+	arr.show();
+	return 0;
+}
+
+
