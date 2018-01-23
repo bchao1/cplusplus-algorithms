@@ -1,0 +1,47 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+//Convec Hull
+
+//Point struct
+struct point {
+	double x;
+	double y;
+};
+
+class Convex_Hull {
+public:
+	Convex_Hull();
+	~Convex_Hull();
+	vector<point> find_hull();
+	void show_hull();
+private:
+	vector<point> pt;
+	vector<point> convex_set;
+	bool comp_y(const point&, const point&);
+	bool comp_polar(const point&, const point&);
+};
+Convex_Hull::Convex_Hull() {
+	double x, y;
+	vector<point>pt;
+	cout << "Enter points: \n";
+	while (cin >> x >> y) {
+		point p = { x,y, };
+		pt.push_back(p);
+	}
+}
+Convex_Hull::~Convex_Hull() {}
+void Convex_Hull::show_hull() {
+	cout << "Convex Hull is defined by: \n";
+	for (int i = 0; i < convex_set.size(); ++i)
+		cout << "x: " << convex_set[i].x << ", y: " << convex_set[i].y << '\n';
+}
+
+int main()
+{
+	Convex_Hull CH;
+	CH.find_hull();
+	CH.show_hull();
+    return 0;
+}
