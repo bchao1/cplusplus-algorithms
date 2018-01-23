@@ -38,6 +38,7 @@ void MergeSort::merge(const int& low, const int& mid, const int& hi) {
 	for (int i = low; i <= hi; ++i)
 		num[i] = sorted[i - low];
 }
+//Sorting process could be modified by using insertion sort when array size is small.
 void MergeSort::sort(const int& low, const int& hi) {
 	if (hi <= low) return;
 	int mid = low + (hi - low) / 2;
