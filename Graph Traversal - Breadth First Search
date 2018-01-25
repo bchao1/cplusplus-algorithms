@@ -1,0 +1,38 @@
+
+class BreadthFirstSearch:public Paths{
+public:
+	BreadthFirstSearch(Graph, int);
+	~BreadthFirstSearch();
+private:
+	void bfs();
+	int* shortest_path;
+};
+
+BreadthFirstSearch::BreadthFirstSearch(Graph g, int s) :Paths(g,s) {
+	shortest_path = new int[g.v()];
+	for (int i = 0; i < g.v(); ++i)
+		shortest_path[i] = 0;
+	bfs();
+}
+
+BreadthFirstSearch::~BreadthFirstSearch() {
+	delete shortest_path;
+}
+
+void BreadthFirstSearch::bfs() {
+	visited[start] = true;
+	queue<int>paths;
+	paths.push(start);
+	while (!paths.empty()) {
+		int v = paths.front();
+		paths.pop();
+		for (int w : graph.adjacent_vertices(v)) {
+			if (!visited[w]) {
+				paths.push(w);
+				visited[w] = true;
+				shortest_path[w] = 1 + shortest_path[v];
+				from_vertex[w] = v;
+			}
+		}
+	}
+}
