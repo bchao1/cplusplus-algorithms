@@ -1,0 +1,29 @@
+// Derived from "Paths" class
+
+class DepthFirstSearch : public Paths{
+public:
+	DepthFirstSearch(Graph, int);
+	~DepthFirstSearch();
+private:
+
+//Recursive function to find path.
+	void dfs(Graph, int);
+};
+
+DepthFirstSearch::DepthFirstSearch(Graph g, int s) :Paths(g,s) {
+	dfs(g, s);
+}
+
+DepthFirstSearch::~DepthFirstSearch() {}
+
+void DepthFirstSearch::dfs(Graph g, int v) {
+	visited[v] = true;
+
+//Visit every adjacent vertex from current vertex
+	for (int w : g.adjacent_vertices(v)) {
+		if (!visited[w]) {
+			dfs(g, w);
+			from_vertex[w] = v;
+		}
+	}
+}
