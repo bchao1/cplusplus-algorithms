@@ -1,0 +1,44 @@
+#include <iostream>
+#include <bitset>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <set>
+#include <map>
+#include <cmath>
+#include <iomanip>
+using namespace std;
+
+// Use solution of 1D subarray to solve 2D sub-rectangle problem
+
+int main() {
+	int n;
+		while (cin >> n) {
+			int rec[101][101] = { 0 };
+			for (int i = 1; i <= n; ++i)
+				for (int j = 1; j <= n; ++j)
+					cin >> rec[i][j];
+
+			long long twoDmax = 1e-9;
+			for (int i = 1; i <= n; ++i) {
+				long long oneDmax = 1e-9;
+				long long sum[101] = { 0 };
+				for (int j = i; j <= n; ++j) {
+					for (int k = 1; k <= n; ++k)
+						sum[k] += rec[k][j];
+					long long rowsum = 0;
+					long long rowmax = 1e-9;
+					for (int x = 1; x <= n; ++x) {
+						if (rowsum >= 0) rowsum += sum[x];
+						else rowsum = sum[x];
+						rowmax = max(rowmax, rowsum);
+					}
+					oneDmax = max(rowmax, oneDmax);
+				}
+				twoDmax = max(oneDmax, twoDmax);
+			}
+		cout << twoDmax << '\n';
+	}
+	return 0;
+}
