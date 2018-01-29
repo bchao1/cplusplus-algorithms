@@ -1,0 +1,47 @@
+#include <iostream>
+#include <bitset>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <set>
+#include <map>
+#include <cmath>
+#include <iomanip>
+#include <cstring>
+using namespace std;
+double a;
+struct point {
+	double x;
+	double y;
+};
+
+double dist(point a, point b) {
+	return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
+}
+
+bool inside(point p) {
+	point e = { 0,0 }, f = { 0,a }, g = { a,0 }, h = { a,a };
+	if (dist(e, p) <= a&&dist(f, p) <= a&&dist(g, p) <= a&&dist(h, p) <= a)
+		return true;
+	return false;
+}
+
+int main() {
+	int n;
+	double _x, _y;
+	while (cin >> n >> a&&n != 0) {
+		vector<point> randp;
+		for (int i = 0; i < n; ++i) {
+			cin >> _x >> _y;
+			point p = { _x,_y };
+			randp.push_back(p);
+		}
+		int m = 0;
+		for (int i = 0; i < n; ++i)
+			if (inside(randp[i]))
+				m++;
+		cout << fixed << setprecision(5) << m*a*a / n << '\n';
+	}
+	return 0;
+}
