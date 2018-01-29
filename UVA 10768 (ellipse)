@@ -1,0 +1,26 @@
+#include <iostream>
+#include <bitset>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <set>
+#include <map>
+#include <cmath>
+#include <iomanip>
+#include <cstring>
+using namespace std;
+
+int main() {
+	int n;
+	double c, a;
+	while (cin >> n) {
+		while (n--) {
+			cin >> c >> a;
+			c /= 2; a /= 2;
+			double b = sqrt(a*a - c*c);
+			cout << fixed << setprecision(3) << 2 * acos(0)*a*b << '\n';
+		}
+	}
+	return 0;
+}
