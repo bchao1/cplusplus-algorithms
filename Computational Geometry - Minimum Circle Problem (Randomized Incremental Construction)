@@ -1,0 +1,75 @@
+#include <iostream>
+#include <bitset>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <set>
+#include <map>
+#include <cmath>
+#include <iomanip>
+#include <cstring>
+using namespace std;
+
+struct vertex {
+	double x;
+	double y;
+};
+
+double dist(vertex a, vertex b) {
+	return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
+}
+
+vertex center(vertex p, vertex q, vertex r) {
+	double a = 2 * (p.x - q.x), b = 2 * (p.y - q.y), c = pow(p.x, 2) + pow(p.y, 2) - pow(q.x, 2) - pow(q.y, 2);
+	double d = 2 * (p.x - r.x), e = 2 * (p.y - r.y), f = pow(p.x, 2) + pow(p.y, 2) - pow(r.x, 2) - pow(r.y, 2);
+	double del = a*e - b*d, delx = c*e - b*f, dely = a*f - d*c;
+	vertex ret;
+	ret.x = delx / del; ret.y = dely / del;
+	return ret;
+}
+
+double packed(vector<vertex>poly) {
+	random_shuffle(poly.begin(), poly.end());
+	vertex o = poly[0];
+	double r = 0;
+
+	for (int i = 1; i < poly.size(); ++i) {
+		if (dist(o, poly[i]) - r > 1e-6) {
+			o = poly[i];
+			for (int j = 0; j < i; ++j) {
+				if (dist(o, poly[j]) - r > 1e-6) {
+					o.x = (poly[i].x + poly[j].x) / 2;
+					o.y = (poly[i].y + poly[j].y) / 2;
+					r = dist(poly[j], o);
+					for (int k = 0; k < j; ++k) {
+						if (dist(o, poly[k]) - r > 1e-6) {
+							o = center(poly[i], poly[j], poly[k]);
+							r = dist(poly[k], o);
+						}
+					}
+				}
+			}
+		}
+	}
+	//cout << "radius: " << r << '\n';
+	return r;
+}
+
+int main() {
+	int n;
+	double _x, _y, r;
+	while (cin >> n&&n!=0) {
+		vector<vertex>poly;
+		for (int i = 0; i < n; ++i) {
+			cin >> _x >> _y;
+			vertex v = { _x,_y };
+			poly.push_back(v);
+		}
+		cin >> r;
+		if (packed(poly) < r + 1e-6) cout << "The polygon can be packed in the circle.\n";
+		else cout << "There is no way of packing that polygon.\n";
+	}
+	return 0;
+}
+
