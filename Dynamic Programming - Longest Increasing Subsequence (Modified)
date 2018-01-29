@@ -1,0 +1,36 @@
+#include <iostream>
+#include <bitset>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <set>
+#include <map>
+#include <cmath>
+#include <iomanip>
+#include <cstring>
+#define max_len 100
+using namespace std;
+
+//Longest increasing subsequence
+
+
+int main() {
+	int n;
+	int num[max_len];
+	int lis[max_len];
+	cin >> n;
+	for (int i = 0; i < n; ++i)
+		cin >> num[i];
+	lis[0] = 1;
+	int lislen = 1;
+	for (int i = 1; i < n; ++i) {
+		lis[i] = 1;
+		for (int j = 0; j < i; ++j)
+			if (num[i] > num[j])
+				lis[i] = max(lis[i], 1 + lis[j]);
+		lislen = max(lis[i], lislen);
+	}
+	cout << lislen << '\n';
+	return 0;
+}
