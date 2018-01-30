@@ -1,0 +1,64 @@
+#include <iostream>
+#include <bitset>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <set>
+#include <map>
+#include <cmath>
+#include <iomanip>
+#include <cstring>
+#define len 210
+#define RED true
+using namespace std;
+
+int ad[len][len], n, a, b, t;
+int marked[len];
+bool color[len], c;
+
+bool dfs(int v) {
+	marked[v] = 1;
+	color[v] = c; c = !c;
+
+	for (int x = 0; x < n; ++x)
+		if (ad[x][v]) {
+			if (marked[x]) {
+				if (color[x] == color[v])
+					return false;
+			}
+			else
+				dfs(x);
+		}
+}
+
+int main() {
+	while (cin >> n&&n) {
+		cin >> t;
+
+		memset(ad, 0, sizeof(ad));
+		memset(marked, 0, sizeof(marked));
+		memset(color, 0, sizeof(color));
+		c = RED;
+
+		while (t--) {
+			cin >> a >> b;
+			ad[a][b] = ad[b][a] = 1;
+		}
+		
+		bool flag = true;
+		for (int i = 0; i < n; ++i)
+			if (!marked[i])
+				if (!dfs(i)) {
+					flag = false;
+					break;
+				}
+		if (flag) {
+			cout << "BICOLORABLE.\n";
+			for (int i = 0; i < n; ++i)
+				cout << i << ": " << (color[i] ? "WHITE" : "RED" )<< '\n';
+		}
+		else cout << "NOT BICOLORABLE.\n";
+	}
+	return 0;
+}
