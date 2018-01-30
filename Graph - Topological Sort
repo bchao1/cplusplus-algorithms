@@ -1,0 +1,54 @@
+#include <iostream>
+#include <bitset>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <set>
+#include <map>
+#include <cmath>
+#include <iomanip>
+#include <cstring>
+#include <sstream>
+#include <stack>
+#define len 105
+using namespace std;
+
+int ad[len][len];
+int marked[len];
+int n, m;
+stack<int>path;
+
+void dfs(int v) {
+	marked[v] = 1;
+	for (int x = 1; x <= n; ++x)
+		if (ad[v][x] && !marked[x]) {
+			dfs(x);
+			path.push(x);
+		}
+}
+
+int main() {
+	int a, b;
+	while (cin >> n >> m&&n) {
+		memset(ad, 0, sizeof(ad));
+		memset(marked, 0, sizeof(marked));
+		while (!path.empty()) path.pop();
+
+		while (m--) {
+			cin >> a >> b;
+			ad[a][b] = 1;
+		}
+		for (int i = 1; i <= n; ++i)
+			if (!marked[i]) {
+				dfs(i);
+				path.push(i);
+			}
+		while (!path.empty()) {
+			cout << path.top() << ' ';
+			path.pop();
+		}
+		cout << '\n';
+	}
+	return 0;
+}
