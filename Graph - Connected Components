@@ -1,0 +1,93 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <cmath>
+#include <queue>
+#include <functional>
+#include <time.h>
+#include <cstdlib>
+#include <queue>
+#include <map>
+#include <sstream>
+#include <list>
+#include <stack>
+#include <bitset>
+
+using namespace std;
+
+class graph {
+	friend class CC;
+public:
+	graph(int n);
+	int v() { return g.size(); }
+	void add_edge(int, int);
+	bool connected(int, int);
+private:
+	vector<list<int> >g;
+};
+graph::graph(int n) {
+	for (int i = 0; i < n; ++i) {
+		list<int> l;
+		g.push_back(l);
+	}
+}
+void graph::add_edge(int a, int b) {
+	g[a].push_back(b);
+	g[b].push_back(a);
+}
+bool graph::connected(int a, int b) {
+	for (int v : g[a])
+		if (v == b)
+			return true;
+	return false;
+}
+
+class CC {
+public:
+	CC(graph _g) :G(_g) { 
+		ct = 0;
+		for (int i = 0; i < G.v(); ++i) {
+			cc.push_back(0);
+			visited.push_back(0);
+		}
+		for(int i=0;i<G.v();++i)
+			if (!visited[i]) {
+				dfs(i);
+				ct++;
+			}
+	};
+	void show() {
+		for (int i = 0; i < cc.size(); ++i)
+			cout << i << ": " << cc[i] << '\n';
+	}
+private:
+	graph G;
+	vector<int>cc;
+	vector<bool>visited;
+
+	void dfs(int v);
+	int ct;
+};
+
+void CC::dfs(int v) {
+	visited[v] = 1;
+	cc[v] = ct;
+	for (int x : G.g[v])
+		if (!visited[x])
+			dfs(x);
+}
+
+int main() {
+	graph g(8);
+	int a, b;
+	int n;
+	cin >> n;
+	while (n--) {
+		cin >> a >> b;
+		g.add_edge(a, b);
+	}
+	CC cc(g);
+	cc.show();
+	return 0;
+}
