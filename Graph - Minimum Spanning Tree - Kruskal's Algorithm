@@ -1,0 +1,159 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <cmath>
+#include <queue>
+#include <functional>
+#include <time.h>
+#include <cstdlib>
+#include <queue>
+#include <map>
+#include <sstream>
+#include <list>
+#include <stack>
+
+using namespace std;
+
+class edge {
+	friend class MST;
+public:
+	edge(int a, int b, int _w) :v1(a), v2(b), w(_w) {}
+	int weight() { return w; }
+private:
+	int v1;
+	int v2;
+	int w;
+};
+auto cmp = [](edge a, edge b) {
+	return a.weight() > b.weight();
+};
+
+class Graph {
+public:
+	Graph() {};
+//Initialize Graph with v vertices and e edges.
+	Graph(int v, int e);
+	Graph(int);
+	~Graph();
+	void add_vertex();
+	void add_edge(int, int, int);
+	bool connected(int, int);
+
+	int v();
+	list<int> adjacent_vertices(int);
+	vector<edge> edges() { return EV; }
+private:
+	vector<list<int> >adlist;
+	vector<edge>EV;
+};
+
+
+Graph::~Graph() {}
+Graph::Graph(int n) {
+	for (int i = 0; i < n; ++i) {
+		list<int> new_vertex;
+		adlist.push_back(new_vertex);
+	}
+}
+Graph::Graph(int v, int e) {
+	for (int i = 0; i < v; ++i) {
+		list<int> new_vertex;
+		adlist.push_back(new_vertex);
+	}
+	int a, b, w;
+	cout << "Enter edges:\n";
+	for (int i = 0; i < e; ++i) {
+		cin >> a >> b >> w;
+		add_edge(a, b, w);
+	}
+}
+void Graph::add_vertex() {
+	list<int> new_vertex;
+	adlist.push_back(new_vertex);
+}
+void Graph::add_edge(int m, int n, int w) {
+	if (m >= v() || n >= v()) return;
+	adlist[m].push_back(n);
+	adlist[n].push_back(m);
+	edge e(m, n, w);
+	EV.push_back(e);
+}
+
+list<int> Graph::adjacent_vertices(int n) {
+	return adlist[n];
+}
+bool Graph::connected(int m, int n) {
+	for (list<int>::iterator it = adlist[m].begin(); it != adlist[m].end(); ++it)
+		if (*it == n)
+			return true;
+	return false;
+}
+int Graph::v() {
+	return adlist.size();
+}
+
+class MST {
+public:
+	MST(Graph);
+	vector<edge> edges();
+	int MST_cost();
+private:
+	Graph graph;
+	int cost;
+	int*cc;
+	bool connected(int, int);
+	void combine(int, int);
+	priority_queue<edge, vector<edge>, decltype(cmp)> sorted{ cmp };
+	vector<edge>mst_edges;
+	void greedy();
+};
+
+MST::MST(Graph g):graph(g),cost(0){
+	for (edge e : graph.edges())
+		sorted.push(e);
+	cc = new int[graph.v()];
+	for (int i = 0; i < graph.v(); ++i)
+		cc[i] = i;
+	greedy();
+}
+void MST::combine(int i, int j) {
+	int p = cc[i], q = cc[j];
+	for (int k = 0; k < graph.v(); ++k)
+		if (cc[k] == q)
+			cc[k] = p;
+}
+bool MST::connected(int i, int j) {
+	return cc[i] == cc[j];
+}
+
+void MST::greedy() {
+	while (!sorted.empty()) {
+		edge e = sorted.top(); sorted.pop();
+		if (connected(e.v1, e.v2))
+			continue;
+		combine(e.v1, e.v2);
+		cost += e.w;
+		mst_edges.push_back(e);
+	}
+}
+vector<edge> MST::edges() {
+	return mst_edges;
+}
+int MST::MST_cost() {
+	return cost;
+}
+
+int main() {
+	Graph g(5);
+	g.add_edge(0, 1, 5);
+	g.add_edge(0, 2, 5);
+	g.add_edge(1, 2, 2);
+	g.add_edge(0, 3, 5);
+	g.add_edge(2, 3, 8);
+	g.add_edge(0, 4, 5);
+	g.add_edge(3, 4, 8);
+	MST mst(g);
+	cout << "Minimum cost: " << mst.MST_cost() << '\n';
+	return 0;
+}
