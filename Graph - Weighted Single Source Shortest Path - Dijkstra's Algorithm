@@ -1,0 +1,111 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <functional>
+#include <utility>
+
+using namespace std;
+typedef pair<long double, int> di;
+
+class edge {
+	friend class DAG;
+	friend class WSSSP;
+public:
+	edge(int n, int w) :next(n), weight_to_next(w) {};
+private:
+	int next;
+	int weight_to_next;
+};
+class DAG {
+	friend class WSSSP;
+public:
+	DAG(int n);
+	int v() { return g.size(); }
+	void add_edge(int ,int, int);
+	bool connected(int, int);
+private:
+	vector<list<edge> >g;
+};
+DAG::DAG(int n) {
+	for (int i = 0; i < n; ++i) {
+		list<edge> l;
+		g.push_back(l);
+	}
+}
+void DAG::add_edge(int prev, int next, int w) {
+	edge e(next, w);
+	g[prev].push_back(e);
+}
+bool DAG::connected(int a, int b) {
+	for (edge e : g[a])
+		if (e.next == b)
+			return true;
+	return false;
+}
+
+//Weighted Single Source Shortest Path
+class WSSSP {
+public:
+	WSSSP(DAG, int);
+	~WSSSP();
+	long double dist_to(int v) { return dist[v]; }
+private:
+	DAG dag;
+	int source;
+	long double* dist;
+	int* to;
+	void Dijkstra();
+};
+
+WSSSP::WSSSP(DAG g, int s) :dag(g), source(s) {
+	dist = new long double[g.v()];
+	to = new int[g.v()];
+	for (int i = 0; i < g.v(); ++i) {
+		dist[i] = INFINITY; to[i] = -1;
+	}
+	dist[s] = 0; to[s] = s;
+	Dijkstra();
+};
+WSSSP::~WSSSP() {
+	delete[]dist;
+	delete[]to;
+}
+void WSSSP::Dijkstra() {
+	priority_queue<di, vector<di>, greater<di> >pq;
+	for (int i = 0; i < dag.v(); ++i)
+		pq.push(make_pair(dist[i], i));
+	while (!pq.empty()) {
+		di p = pq.top(); pq.pop();
+		long double d = p.first;
+		int v = p.second;
+		if (d == dist[v]) {
+			for (edge e : dag.g[v]) {
+				int w = e.weight_to_next, u = e.next;
+			//Relax edge 
+				if (dist[v] + w < dist[u]) {
+					dist[u] = w + dist[v];
+					to[u] = v;
+					pq.push(make_pair(dist[u], u));
+				}
+			}
+		}
+	}
+}
+
+int main() {
+	DAG dag(5);
+	dag.add_edge(0, 1, 10);
+	dag.add_edge(0, 3, 5);
+	dag.add_edge(1, 3, 2);
+	dag.add_edge(3, 1, 3);
+	dag.add_edge(4, 0, 7);
+	dag.add_edge(3, 4, 2);
+	dag.add_edge(1, 2, 1);
+	dag.add_edge(3, 2, 9);
+	dag.add_edge(2, 4, 4);
+	dag.add_edge(4, 2, 6);
+	WSSSP path(dag, 0);
+	for (int i = 0; i < 5; ++i)
+		cout << i<<": " << path.dist_to(i) << '\n';
+	return 0;
+}
