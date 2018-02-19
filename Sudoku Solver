@@ -1,0 +1,156 @@
+#include<iostream>
+
+#define N 9
+#define UNSIGNED 0
+
+using namespace std;
+void print_solution(int a[N][N])
+{
+    for(int i=0;i<N;++i)
+        {
+        for(int j=0;j<N;++j)
+            cout<<a[i][j]<<" ";
+        cout<<endl;
+        }
+    return;
+}
+bool check_row(int a[N][N])
+{
+    for(int i=0;i<N;++i)
+    {
+        int used[N+1]={};
+        for(int j=0;j<N;++j)
+            {   if(a[i][j]!=0)
+                {   if(used[a[i][j]]==0)
+                        used[a[i][j]]=1;
+                    else
+                    {   return false;
+                        break;  }   }   }
+    }
+    return true;
+}
+bool check_column(int a[N][N])
+{
+    for(int i=0;i<N;++i)
+    {
+        int used[N+1]={};
+        for(int j=0;j<N;++j)
+            {   if(a[j][i]!=0)
+                {   if(used[a[j][i]]==0)
+                        used[a[j][i]]=1;
+                    else
+                    {   return false;
+                        break;  }   }   }
+    }
+    return true;
+}
+bool check_box(int a[N][N])
+{
+    for(int i=0;i<=6;i+=3)
+        for(int j=0;j<=6;j+=3)
+    {
+        int used[N+1]={};
+        for(int x=i;x<i+3;++x)
+            for(int y=j;y<j+3;++y)
+        {
+            if(a[x][y]!=0)
+            {
+                if(used[a[x][y]]==0)
+                    used[a[x][y]]=1;
+                else
+                    {return false;
+                    break;}
+            }
+        }
+    }
+    return true;
+}
+bool row_used(int a[N][N],int row,int num)
+{
+    for(int i=0;i<N;++i)
+        if(a[row][i]==num)
+            return true;
+    return false;
+}
+bool column_used(int a[N][N],int column,int num)
+{
+    for(int i=0;i<N;++i)
+        if(a[i][column]==num)
+            return true;
+    return false;
+}
+bool box_used(int a[N][N],int start_row, int start_column, int num)
+{
+    for(int i=start_row;i<start_row+3;++i)
+        for(int j=start_column;j<start_column+3;++j)
+            if(a[i][j]==num)
+                return true;
+    return false;
+}
+bool unsigned_element(int a[N][N],int &row,int &column)
+{
+    for(row=0;row<N;++row)
+        for(column=0;column<N;++column)
+            if(a[row][column]==0)
+                return true;
+    return false;
+}
+bool is_safe(int a[N][N],int row,int column, int num)
+{
+    return !column_used(a,column,num)&&
+           !row_used(a,row,num)&&
+           !box_used(a,row-row%3,column-column%3,num);
+}
+bool solve_sudoku(int a[N][N])
+{
+    int row,column;
+
+    if(!unsigned_element(a,row,column))
+        return true;
+
+    for(int n=1;n<=N;++n)
+    {
+        if(is_safe(a,row,column,n))
+        {
+            a[row][column]=n;
+
+            if(solve_sudoku(a))
+                return true;
+
+            a[row][column]=UNSIGNED;
+        }
+    }
+    return false;
+}
+
+int main()
+{
+    while(cout<<"Sudoku to solve:"<<endl)
+    {
+        int sudoku[N][N]={};
+
+        string s;
+        cin>>s;
+        int k=0;
+
+        for(int i=0;i<N;++i)
+            for(int j=0;j<N;++j)
+                {
+                    sudoku[i][j]=s[k]-'0';
+                    ++k;
+                }
+
+        if(check_box(sudoku)&&check_column(sudoku)&&check_row(sudoku))
+            {
+                cout<<"Valid"<<endl;
+                if(solve_sudoku(sudoku)==true)
+                    print_solution(sudoku);
+                else
+                    cout<<"No solution"<<endl;
+            }
+
+        else
+            cout<<"Invalid. Please enter another sudoku to solve."<<endl;
+    }
+    return 0;
+}
