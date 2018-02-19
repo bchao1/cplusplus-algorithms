@@ -1,0 +1,233 @@
+#include<iostream>
+ 
+using namespace std;
+ 
+void find_lowest_elim(int u[8][8],int e[8][8],int&, int&,int t[8][8]);
+void update_elim(int u[8][8],int e[8][8]);
+void update_used(int, int, int, int, int u[8][8]);
+bool all_tried(int t[8][8],int u[8][8]);
+ 
+bool solve8queens(int,char c[8][8], int u[8][8], int e[8][8]);
+ 
+void printsol(char c[8][8]);
+ 
+ 
+int main()
+{
+    int elim_number[8][8] = {{22,22,22,22,22,22,22,22},
+                             {22,24,24,24,24,24,24,22},
+                             {22,24,26,26,26,26,24,22},
+                             {22,24,26,28,28,26,24,22},
+                             {22,24,26,28,28,26,24,22},
+                             {22,24,26,26,26,26,24,22},
+                             {22,24,24,24,24,24,24,22},
+                             {22,22,22,22,22,22,22,22}};
+//The elimination number table for a 8*8 chess board
+ 
+    int used[8][8] = {0};
+//Check for valid square to put queen.
+ 
+    char board[8][8];
+//The chessboard
+ 
+    for(int i=0;i<8;++i)
+        for(int j=0;j<8;++j)
+            board[i][j]='-';
+ 
+    int start;
+ 
+    cin >> start;
+    board[start / 8][start % 8] = '+';
+//Place first queen
+ 
+    update_used(start / 8, start % 8, 1, 1, used);
+//Update the used board.
+    update_elim(used,elim_number);
+ 
+    if(solve8queens(2,board,used,elim_number))
+//Index 2 : currently placing the second queen
+        printsol(board);
+    else
+        cout<<"FAIL";
+    return 0;
+}
+ 
+bool solve8queens(int queens,char board[8][8],int used[8][8],int elim_number[8][8])
+{
+    if(queens == 9)
+        return true;
+//If all queens are assigned to the board, return success flag.
+ 
+    int tried[8][8]={0};
+//Array to update tried(placing queens) squares.
+ 
+    while(!all_tried(tried,used))
+//While there are still squares that are not tried, loop
+    {
+        int i,j;
+        find_lowest_elim(used,elim_number,i,j,tried);
+//i, j now stores the square to assign queen to (i, j is passed by reference)
+ 
+        board[i][j] = '+';
+        update_used(i,j,1,queens,used);
+        update_elim(used,elim_number);
+        tried[i][j] = 1;
+//This square is tried
+ 
+        if(solve8queens(queens+1,board,used,elim_number))
+            return true;
+//If successfully placed the final queen, return success flag.
+ 
+//Or else, backtrack.
+        board[i][j] = '-';
+        update_used(i,j, 0,queens,used);
+        update_elim(used,elim_number);
+    }
+ 
+    return false;
+//No solution is found.
+}
+ 
+void update_used(int x, int y, int state, int step,int used[8][8])
+{
+/*
+"State" flag is to determine whether to place a queen or remove a queen.
+"Step" represents which queen we are trying to place or remove.
+*/
+ 
+//State 1 : place queen
+    if(state == 1)
+    {
+        for(int i=0;i<8;++i)
+        {
+            if(!used[x][i])
+                used[x][i] = step;
+//Queen attacks vertical columns.
+            if(!used[i][y])
+                used[i][y] = step;
+//Queen attacks horizontal rows.
+            for(int j=0;j<8;++j)
+            {
+                if(!used[i][j])
+                {
+                    if(i-j == x-y)
+                        used[i][j] = step;
+//Queen attacks -45 degree diagonal.
+                    if(i+j == x+y)
+                        used[i][j] = step;
+//Queen attacks 45 degree diagonal.
+                }
+            }
+        }
+    }
+ 
+/*
+State 0 : remove queen. Note we only reset the "newly" attacked squares.
+Squares that are attacked by previous placements are left unaltered.
+*/
+ 
+    else
+    {
+        for(int i=0;i<8;++i)
+        {
+            if(used[x][i] == step)
+                used[x][i] = 0;
+            if(used[i][y] == step)
+                used[i][y] = 0;
+            for(int j=0;j<8;++j)
+            {
+ 
+                if(used[i][j]==step)
+                {
+                    if(i-j==x-y)
+                        used[i][j] = 0;
+                    if(i+j==x+y)
+                        used[i][j] = 0;
+                }
+ 
+            }
+        }
+    }
+}
+ 
+void update_elim(int used[8][8],int elim_number[8][8])
+{
+    for(int i=0;i<8;++i)
+        for(int j=0;j<8;++j)
+    {
+        if(!used[i][j])
+//Loops squares that are not yet attacked by queens.
+        {
+            int updated=0;
+//Stores the elimination number of every square.
+            for(int t=0;t<8;++t)
+            {
+                if(!used[i][t])
+                    updated++;
+                if(!used[t][j])
+                    updated++;
+                for(int k=0;k<8;++k)
+                {
+                    if(!used[t][k])
+                    {
+                        if(t-k==i-j)
+                            updated++;
+                        if(t+k==i+j)
+                            updated++;
+                    }
+                }
+            }
+            elim_number[i][j] = updated - 3;
+//Subtract repeated increments.
+        }
+        else
+            elim_number[i][j] = 0;
+//A square that is not valid for queen placement has no ability to eliminate squares.
+    }
+}
+ 
+void find_lowest_elim(int used[8][8], int elim_number[8][8],int& x,int &y,int tried[8][8])
+{
+    int lowest = 100;
+ 
+    for(int i=0;i<8;++i)
+        for(int j=0;j<8;++j)
+    {
+        if(!used[i][j] && !tried[i][j] && elim_number[i][j] < lowest)
+//Find the square that has not been assigned to a queen before.
+        {
+            lowest = elim_number[i][j];
+            x=i;
+            y=j;
+        }
+    }
+}
+ 
+void printsol(char c[8][8])
+{
+    for(int i=0;i<8;++i)
+        for(int j=0;j<8;++j)
+            if(c[i][j]=='+')
+                cout<<8*i+j<<' ';
+    cout<<"\n\n";
+ 
+    for(int i=0;i<7;++i)
+    {
+        for(int j=0;j<8;++j)
+            cout<<' '<<c[i][j];
+        cout<<endl;
+    }
+    for(int i=0;i<8;++i)
+        cout<<' '<<c[7][i];
+ 
+}
+ 
+bool all_tried(int t[8][8],int used[8][8])
+{
+//Check whether all valid squares for queen placement is tried.
+    for(int i=0;i<8;++i)
+        for(int j=0;j<8;++j)
+            if(!t[i][j] && ! used[i][j])
+                return false;
+    return true;
+}
