@@ -1,0 +1,58 @@
+#include <iostream>
+#include <string>
+#include <stack>
+#include <cctype>
+using namespace std;
+
+int prec(char c) {
+	if (c == '+' || c == '-')
+		return 1;
+	else if (c == '*' || c == '/')
+		return 2;
+	else if (c == '^')
+		return 3;
+	return -1;
+}
+
+void postFix(const string& s) {
+	stack<char>exp;
+	for (auto c:s) {
+		if (isalpha(c))
+			cout << c;
+		else if (c == '(')
+			exp.push(c);
+		else if (c == ')') {
+			while (exp.top() != '(') {
+				cout << exp.top();
+				exp.pop();
+			}
+			exp.pop();
+		}
+		else {
+				if (!exp.empty()&&(prec(exp.top()) >= prec(c))) {
+					while (!exp.empty()) {
+						if (exp.top() == '(')
+							break;
+						cout << exp.top();
+						exp.pop();
+					}
+				}
+			exp.push(c);
+		}
+	}
+	while (!exp.empty()) {
+		cout << exp.top();
+		exp.pop();
+	}
+	return;
+}
+
+
+int main() {
+	string s;
+	while (cin >> s) {
+		postFix(s);
+		cout << '\n';
+	}
+	return 0;
+}
