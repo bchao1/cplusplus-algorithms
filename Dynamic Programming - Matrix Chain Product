@@ -1,0 +1,41 @@
+#include <iostream>
+#include <cstdio>
+#include <string>
+#include <cctype>
+#include <cstring>
+#include <climits>
+
+using namespace std;
+
+
+int matrix[100][100];
+int sz[100];
+
+int chain(int, int);
+
+int main(){
+	int n;
+	while(cin >> n){
+		for(int i = 0; i < n+1; ++i)
+			cin >> sz[i]; //The multiplication chain can be represented by a sequence of lengths
+		memset(matrix,-1,sizeof(matrix));
+		for(int i = 0; i <= n; ++i)
+			matrix[i][i] = 0;
+		cout << chain(1,n)<<'\n';
+	}
+}
+
+//Memoization
+int chain(int i, int j){
+	if(i>j) return INT_MAX;
+	if(matrix[i][j]>=0) return matrix[i][j];
+
+	int res = 0;
+	int min_sol = INT_MAX;
+	for(int k=i ; k<j ; ++k){
+		res = chain(i,k) + chain(k+1,j) + sz[i-1]*sz[k]*sz[j];
+		if(res < min_sol)
+			min_sol = matrix[i][j] = res;
+	}
+	return min_sol;
+}
